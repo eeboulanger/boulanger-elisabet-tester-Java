@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TicketDAO {
 
@@ -85,5 +87,28 @@ public class TicketDAO {
             dataBaseConfig.closeConnection(con);
         }
         return false;
+    }
+
+    public int getNbTicket(String vehicleRegNumber){
+        Connection con = null;
+        int numberOfTickets = 0;
+
+        try {
+            con = dataBaseConfig.getConnection();
+            //Get number of tickets with vehicul reg nr in DB
+            PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKETS);
+            ps.setString(1,vehicleRegNumber);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                numberOfTickets = rs.getInt(1);
+            }
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
+        }catch (Exception ex){
+            logger.error("Error fetching the number of tickets",ex);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+            return numberOfTickets;
+        }
     }
 }
