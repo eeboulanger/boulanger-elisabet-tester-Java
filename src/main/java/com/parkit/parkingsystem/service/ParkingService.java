@@ -106,11 +106,11 @@ public class ParkingService {
         try{
             String vehicleRegNumber = getVehichleRegNumber();
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
-           //check if has been here before
-            boolean discount = (ticketDAO.getNbTicket(vehicleRegNumber) > Discount.MIN_PASSAGES);
             Date outTime = new Date();
             ticket.setOutTime(outTime);
-            fareCalculatorService.calculateFare(ticket, discount);
+            //check if discount
+            boolean isDiscount = ticketDAO.getNbTicket(vehicleRegNumber) > Discount.MIN_PASSAGES;
+            fareCalculatorService.calculateFare(ticket, isDiscount);
             if(ticketDAO.updateTicket(ticket)) {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);
