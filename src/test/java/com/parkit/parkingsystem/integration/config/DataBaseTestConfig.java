@@ -11,10 +11,23 @@ public class DataBaseTestConfig extends DataBaseConfig {
     private static final Logger logger = LogManager.getLogger("DataBaseTestConfig");
 
     public Connection getConnection() throws ClassNotFoundException, SQLException {
+
         logger.info("Create DB connection");
         Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/test?serverTimezone=UTC","root","rootroot");
+
+       try {
+           return DriverManager.getConnection(
+                   "jdbc:mysql://localhost:3306/test?serverTimezone=UTC", "root", "rootroot");
+       } catch (SQLException e) {
+           if (e.getMessage().contains("Unknown database")) {
+               logger.info("'test' database does not exist. Attempting to create it.");
+               return DriverManager.getConnection(
+                       "jdbc:mysql://localhost:3306/?serverTimezone=UTC", "root", "rootroot");
+           }
+           else {
+               throw e;
+           }
+       }
     }
 
     public void closeConnection(Connection con){
