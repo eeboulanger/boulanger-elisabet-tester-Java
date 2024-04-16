@@ -167,12 +167,12 @@ public class ParkingServiceTest {
 
        @Test
        public void testGetNextParkingNumberIfAvailableParkingNumberNotFound(){
-           when(inputReaderUtil.readSelection()).thenReturn(1);
+           when(inputReaderUtil.readSelection()).thenReturn(2);
            when(parkingSpotDAO.getNextAvailableSlot(ParkingType.BIKE)).thenReturn(0);
 
            ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
 
-           verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(ParkingType.CAR);
+           verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(ParkingType.BIKE);
            assertNull(parkingSpot);
        }
 
@@ -182,7 +182,7 @@ public class ParkingServiceTest {
 
            ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
 
-           assertNull(parkingSpot);
+           assertNull(parkingSpot); //Entered input is invalid
        }
    }
 }
