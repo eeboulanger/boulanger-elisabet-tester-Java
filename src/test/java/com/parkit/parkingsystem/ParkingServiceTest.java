@@ -184,9 +184,6 @@ public class ParkingServiceTest {
             ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
 
             assertNull(parkingSpot); //Entered input is invalid
-            assertThrows(IllegalArgumentException.class, () -> {
-                throw new IllegalArgumentException("Error parsing user input for type of vehicle");
-            });
         }
     }
 }

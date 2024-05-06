@@ -36,7 +36,7 @@ public class ParkingDataBaseIT {
     private static InputReaderUtil inputReaderUtil;
 
     @BeforeAll
-    private static void setUp() throws Exception{
+    private static void setUp() throws Exception {
         parkingSpotDAO = new ParkingSpotDAO();
         parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
         ticketDAO = new TicketDAO();
@@ -55,13 +55,13 @@ public class ParkingDataBaseIT {
     }
 
     @AfterAll
-    private static void tearDown(){
+    private static void tearDown() {
         dataBasePrepareService.clearDataBaseEntries();
     }
 
     @Test
     @DisplayName("Given there is an available parking spot, when incoming vehicle, then save new ticket and update available parking spot")
-    public void testParkingACar(){
+    public void testParkingACar() {
         //Given there is available parking spot
         when(inputReaderUtil.readSelection()).thenReturn(1);
 
@@ -74,14 +74,14 @@ public class ParkingDataBaseIT {
         int parkingSpot = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
 
         assertNotNull(ticket.getInTime());
-        assertEquals(ticket.getVehicleRegNumber(), "ABCDEF");
+        assertEquals("ABCDEF", ticket.getVehicleRegNumber());
         assertEquals(1, ticket.getParkingSpot().getId()); //parking spot has number 1
         assertEquals(0, parkingSpot); //there was only one free parking spot for cars
     }
 
     @Test
     @DisplayName("Given a car has been parked for 1 hour, when checking out, then the fare should be for 1 hour and out time saved")
-    public void testParkingLotExit(){
+    public void testParkingLotExit() {
         //Given there is a ticket with an in time 1 hour ago
         dataBasePrepareService.populateWithTicketInTimeOneHourAgo();
 
@@ -98,14 +98,14 @@ public class ParkingDataBaseIT {
                 .toLocalDateTime()
                 .truncatedTo(ChronoUnit.MINUTES);
 
-        assertEquals(Fare.CAR_RATE_PER_HOUR * 1, ticket.getPrice() );
+        assertEquals(Fare.CAR_RATE_PER_HOUR * 1, ticket.getPrice());
         assertNotNull(ticket.getOutTime());
         assertEquals(now, outTime);
     }
 
     @Test
     @DisplayName("Given a user has discount, when exiting vehicle, then 5% discount should be applied to the price")
-    public void testParkingLotExitRecurringUser(){
+    public void testParkingLotExitRecurringUser() {
         //Given a customer is eligible for discount (1 previous ticket)
         dataBasePrepareService.populateTicketToDiscountCustomer();
 
@@ -116,12 +116,12 @@ public class ParkingDataBaseIT {
         //Then there should be a minimum of tickets with same reg nr to be eligible for discount, and the price should be reduced with 5% for the last ticket
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
 
-        int eligibleForDiscount = Discount.MIN_PASSAGES +1; //2
+        int eligibleForDiscount = Discount.MIN_PASSAGES + 1; //2
 
         double discountPrice = Fare.CAR_RATE_PER_HOUR * Discount.DISCOUNT;
         double expectedPrice = BigDecimal.valueOf(discountPrice).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-        assertEquals(eligibleForDiscount,ticketDAO.getNbTicket("ABCDEF"));
+        assertEquals(eligibleForDiscount, ticketDAO.getNbTicket("ABCDEF"));
         assertEquals(expectedPrice, ticket.getPrice());
     }
 }
